@@ -86,8 +86,8 @@ Empty service worker. All logic runs in `content.js`. The file exists to satisfy
 | Field                   | Value                       |
 | ----------------------- | --------------------------- |
 | Manifest version        | 3                           |
-| Permissions             | `storage`, `tabs`, `alarms` |
-| Host permissions        | `<all_urls>`                |
+| Permissions             | `storage`                   |
+| Host permissions        | none (content script `matches` handles injection) |
 | Content script run time | `document_idle`             |
 
 ---
