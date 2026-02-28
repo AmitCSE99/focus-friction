@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Focus Friction",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Adds progressive friction to distracting websites to help you stay focused.",
 
   "permissions": ["storage", "tabs", "alarms"],

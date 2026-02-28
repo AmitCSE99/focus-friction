@@ -1,0 +1,20 @@
+# Build artifacts (ZIP is ephemeral — created in CI, never committed)
+*.zip
+
+# Node (if tooling is added later)
+node_modules/
+npm-debug.log*
+package-lock.json
+
+# macOS
+.DS_Store
+._*
+
+# Editors
+.vscode/
+.idea/
+*.sw?
+
+# Secrets
+.env
+.env.local
