@@ -32,11 +32,11 @@ Click **Dismiss** to acknowledge and start the countdown.
 
 After you dismiss the warning, effects kick in on a fixed schedule:
 
-| Time after dismissal | Effect |
-|---|---|
-| 1 min | Greyscale filter applied to the entire page |
-| 1 min | Blur starts at 0 px, grows by +1 px every minute |
-| 3 min | Jitter scroll begins — the page jolts ±4 px every 250 ms |
+| Time after dismissal | Effect                                                   |
+| -------------------- | -------------------------------------------------------- |
+| 1 min                | Greyscale filter applied to the entire page              |
+| 1 min                | Blur starts at 0 px, grows by +1 px every minute         |
+| 3 min                | Jitter scroll begins — the page jolts ±4 px every 250 ms |
 
 All effects are cumulative. The blur keeps increasing indefinitely the longer you stay.
 
@@ -83,12 +83,12 @@ Empty service worker. All logic runs in `content.js`. The file exists to satisfy
 
 ### manifest.json
 
-| Field | Value |
-|---|---|
-| Manifest version | 3 |
-| Permissions | `storage`, `tabs`, `alarms` |
-| Host permissions | `<all_urls>` |
-| Content script run time | `document_idle` |
+| Field                   | Value                       |
+| ----------------------- | --------------------------- |
+| Manifest version        | 3                           |
+| Permissions             | `storage`, `tabs`, `alarms` |
+| Host permissions        | `<all_urls>`                |
+| Content script run time | `document_idle`             |
 
 ---
 
@@ -126,61 +126,3 @@ Empty service worker. All logic runs in `content.js`. The file exists to satisfy
 **CSS filter composition** — greyscale and blur are written as a single `filter` value (`grayscale(100%) blur(Xpx)`) on the `html` element with `!important`, so they override any `filter` the page itself applies. The `transition: filter 2s ease` makes the initial greyscale fade in smoothly.
 
 ---
-
-## Release process
-
-Pushing to `main` automatically packages and publishes the extension via GitHub Actions (`.github/workflows/publish.yml`).
-
-### Before every push to `main`
-
-**Increment `version` in `manifest.json`** — the Chrome Web Store API rejects uploads whose version matches the currently published one (returns `409 Conflict`, failing the job).
-
-| Change type | Example |
-|---|---|
-| Bug fix | `1.0.0` → `1.0.1` |
-| New feature | `1.0.0` → `1.1.0` |
-| Breaking change | `1.0.0` → `2.0.0` |
-
-If you forget, the CI job will fail at the publish step. Fix: bump the version and push again.
-
-### Pipeline steps
-
-1. Push to `main` triggers the workflow
-2. `manifest.json`, `background.js`, `content.js`, `popup.html`, `popup.js` are zipped into `focus-friction.zip`
-3. `chrome-webstore-upload-cli` uploads the ZIP and submits for immediate publishing
-4. The extension enters Chrome's automated review queue (typically minutes to a few hours)
-
-### Required GitHub secrets
-
-Go to **Settings → Secrets and variables → Actions** in the repo and add four secrets:
-
-| Secret | What it is |
-|---|---|
-| `EXTENSION_ID` | 32-char ID from the Chrome Web Store developer dashboard URL |
-| `CLIENT_ID` | OAuth2 client ID (Desktop app) from Google Cloud Console |
-| `CLIENT_SECRET` | OAuth2 client secret from Google Cloud Console |
-| `REFRESH_TOKEN` | Long-lived OAuth2 refresh token from the OAuth 2.0 Playground |
-
-### One-time credential setup
-
-**Step 1 — Extension ID**
-
-1. Go to the [Chrome Web Store Developer Dashboard](https://chrome.google.com/webstore/devconsole)
-2. Create (or open) your extension listing
-3. The 32-character extension ID appears in the dashboard URL and at the top of the listing page
-
-**Step 2 — Google Cloud OAuth credentials**
-
-1. Go to [Google Cloud Console](https://console.cloud.google.com) and create a project
-2. **APIs & Services → Library** → search for and enable **Chrome Web Store API**
-3. **APIs & Services → OAuth consent screen** → choose External → fill in app name and your email → add your Google account as a Test User
-4. **APIs & Services → Credentials → Create Credentials → OAuth client ID** → application type: **Desktop app**
-5. Copy the **Client ID** and **Client Secret** shown in the confirmation dialog
-
-**Step 3 — Refresh token**
-
-1. Go to [OAuth 2.0 Playground](https://developers.google.com/oauthplayground)
-2. Click the ⚙️ gear icon → check **Use your own OAuth credentials** → paste your Client ID and Client Secret
-3. In the Step 1 scope box, enter: `https://www.googleapis.com/auth/chromewebstore` → click **Authorize APIs**
-4. Sign in with the Google account that owns the Chrome Web Store developer account
-5. Click **Exchange authorization code for tokens** → copy the `refresh_token` value from the JSON response
